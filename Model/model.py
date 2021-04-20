@@ -1,6 +1,7 @@
 import numpy as np
 from Layers.layers import Layer
-from tqdm import  tqdm
+from tqdm import tqdm
+from functional.loss import LossFunctionFactory
 
 
 class SequentialModel:
@@ -44,15 +45,13 @@ class SequentialModel:
                 layer.weights = layer.weights - learning_rate * gradient[0]
                 layer.bias = layer.bias - learning_rate * gradient[1]
 
-    def fit(self, x_train, y_train, epochs=10, learning_rate = 0.0075, verbos = 1):
+    def fit(self, x_train, y_train, loss, epochs=10, learning_rate=0.0075, verbose=1):
         pbar = tqdm(range(epochs))
         for i in pbar:
             y_predict = self.forward(x_train)
 
-            m = y_train.shape[1]
-            logprobs = np.multiply(np.log(y_predict), y_train) + np.multiply((1 - y_train), np.log(1 - y_predict))
-            cost = -1 / m * np.sum(logprobs)
-            cost = np.squeeze(cost)
+            loss_function = LossFunctionFactory.get_loss_function(loss)
+            cost = loss_function(true_labels=y_train, predictions=y_predict)
 
             gradient = - (np.divide(y_train, y_predict) - np.divide(1 - y_train, 1 - y_predict))
 
@@ -60,10 +59,5 @@ class SequentialModel:
 
             self.optimize(gradients, learning_rate)
 
-            if verbos == 1 and i % 100 == 0:
-                pbar.set_description("Cost after iteration {}: {}".format(i, np.squeeze(cost)))
-
-
-
-
-
+            if verbose == 1 and i % 100 == 0:
+                pbar.set_description("cost after iteration {}: {}".format(i, cost))

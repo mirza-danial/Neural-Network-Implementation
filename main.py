@@ -56,4 +56,4 @@ if __name__ == '__main__':
     model.add(Linear(input_features=7, output_features=1))
     model.add(Sigmoid())
 
-    model.fit(x_train= train_x, y_train=train_y, epochs=3000)
+    model.fit(x_train= train_x, y_train=train_y, loss='bce', epochs=3000)
