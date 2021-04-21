@@ -46,10 +46,6 @@ if __name__ == '__main__':
     print("train_x's shape: " + str(train_x.shape))
     print("test_x's shape: " + str(test_x.shape))
 
-    n_x = train_x.shape[0]  # num_px * num_px * 3
-    n_h = 7
-    n_y = 1
-
     model = SequentialModel()
     model.add(Linear(input_features=train_x.shape[0], output_features= 7))
     model.add(ReLU())
@@ -57,3 +53,6 @@ if __name__ == '__main__':
     model.add(Sigmoid())
 
     model.fit(x_train= train_x, y_train=train_y, loss='bce', epochs=3000)
+
+    evaluations = model.test(test_x, test_y, metrics = ['accuracy','f1','precision','recall'])
+    print(evaluations)

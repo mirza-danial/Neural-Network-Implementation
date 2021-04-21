@@ -2,7 +2,7 @@ import numpy as np
 from Layers.layers import Layer
 from tqdm import tqdm
 from functional.loss import LossFunctionFactory
-
+from Model.metrics import MetricFactory
 
 class SequentialModel:
 
@@ -61,3 +61,25 @@ class SequentialModel:
 
             if verbose == 1 and i % 100 == 0:
                 pbar.set_description("cost after iteration {}: {}".format(i, cost))
+
+    def predict(self, x):
+        return (self.forward(x) > 0.5).astype(int)
+
+    def test(self, x, y, metrics):
+
+        y_predict = self.predict(x)
+
+        evaluations = dict()
+        if isinstance(metrics, list):
+            for metric_name in metrics:
+                metric = MetricFactory.get_metric(metric_name)
+                result = metric.compute(y_predict, y)
+                evaluations[metric_name] = result
+
+        elif isinstance(metrics, str):
+            metric = MetricFactory.get_metric(metrics)
+            result = metric.compute(y_predict, y)
+            evaluations[metric] = result
+
+        return evaluations
+
