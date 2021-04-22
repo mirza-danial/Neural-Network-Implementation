@@ -2,6 +2,7 @@ from Model.model import SequentialModel
 from Layers.layers import Linear, Sigmoid, ReLU
 import h5py
 import numpy as np
+import pandas as pd
 
 
 def load_data():
@@ -52,7 +53,8 @@ if __name__ == '__main__':
     model.add(Linear(input_features=7, output_features=1))
     model.add(Sigmoid())
 
-    model.fit(x_train= train_x, y_train=train_y, loss='bce', epochs=3000)
+    history = model.fit(x_train= train_x, y_train=train_y, loss='bce', epochs=3000,
+                        x_eval=test_x, y_eval=test_y, metrics = ['accuracy','f1','precision','recall'])
 
-    evaluations = model.test(test_x, test_y, metrics = ['accuracy','f1','precision','recall'])
-    print(evaluations)
+    history = pd.DataFrame(history)
+    print(history)
